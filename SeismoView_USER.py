@@ -21,12 +21,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-path',action='store',dest='inputpath',help='The full file path to the data you want to prepare for a tomography project')
 parser.add_argument('-phase',action='store',dest='phase',help='The seismic phase you are interested in: This determines which SAC files are accessed and what the final output is. Choose from S or P')
 parser.add_argument('-cleanup',action='store_true',dest='cleanup',help='If set, output files from the program will be deleted when it ends')
+parser.add_argument('-fulltrace',action='store_true',dest='fulltrace',help='If set, the program will plot the entire trace, otherwise it will slice around the arrival of interest')
 results = parser.parse_args()
 
 
 #may want to run the viewer in various modes - possibly to control the length of the traces that are displayed etc
 
-def userloop(path,ph):
+def userloop(path,ph,fulltrace=None):
 
 	''' User decisions about how to manipulate the data '''
 
@@ -39,8 +40,12 @@ def userloop(path,ph):
 	SV.multiload()
 
 	#Don't necessarily need to use this option, but there for now
-	SV.preservetraces()
-	#SV.slicetraces(phase=ph)
+	print fulltrace
+
+	if fulltrace:
+		SV.preservetraces()
+	else:
+		SV.slicetraces(phase=ph)
 
 	#define filter bands
 	filterbands = None
@@ -77,7 +82,10 @@ def userloop(path,ph):
 
 			#This one is for full seismogram plotting
 
-			os.system('./plot_quakes_full.py %s %s' %(basename+'.npy',basename+'.dat'))
+			if fulltrace:
+				os.system('./plot_quakes_full.py %s %s' %(basename+'.npy',basename+'.dat'))
+			else:
+				os.system('./plot_quakes_sliced.py %s %s' %(basename+'.npy',basename+'.dat'))
 
 		#flag command - creates or appends to a file containing flagged events 
 
@@ -146,6 +154,8 @@ def main():
 	path = results.inputpath
 	phase = results.phase
 	clean = results.cleanup
+	fulltrace = results.fulltrace
+	print fulltrace
 
 	if (phase != 'P'):
 		print 'input phase %s not recognized' %phase
@@ -174,12 +184,12 @@ def main():
 
 			if newevent:
 
-				IDname = userloop('%s/BH_VEL' %newevent,phase)
+				IDname = userloop('%s/BH_VEL' %newevent,phase,fulltrace=fulltrace)
 				newevent = None
 
 			else:
 
-				IDname = userloop('%s/BH_VEL' %event,phase)
+				IDname = userloop('%s/BH_VEL' %event,phase,fulltrace=fulltrace)
 
 			if IDname:
 				neweventparths = event.split('/')
@@ -196,12 +206,12 @@ def main():
 
 			if newevent:
 
-				IDname = userloop('%s/BH_RAW' %newevent,phase)
+				IDname = userloop('%s/BH_RAW' %newevent,phase,fulltrace=fulltrace)
 				newevent = None
 
 			else:
 
-				IDname = userloop('%s/BH_RAW' %event,phase)
+				IDname = userloop('%s/BH_RAW' %event,phase,fulltrace=fulltrace)
 
 			if IDname:
 				neweventparths = event.split('/')

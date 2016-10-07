@@ -116,7 +116,7 @@ class SeismoView:
 
 
 
-	def slicetraces(self,phase='P',halfwindow=50):
+	def slicetraces(self,phase='P',halfwindow=20):
 
 		'''Makes a new stream consisting of traces cut around predicted arrival given by phase, with a halfwindow
 		provided by the user'''

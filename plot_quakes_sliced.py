@@ -25,7 +25,7 @@ except:
 	print 'Cannot read metadata file %s' %metadata
 
 
-evID = dataarray.split('/')[0]
+evID = dataarray.split('/')[0].split('_')[0]
 
 quakedata = lines[2].split()
 evlon = quakedata[0]
@@ -57,12 +57,21 @@ for i in range(np.shape(seisarr)[1]-1):
 	network = stavals[0]
 	station = stavals[1]
 	channel = stavals[2]
-	ptime= float(stavals[4])
+
+	ptime= float(stavals[4]) #this is actually the 'halfwindow' value, where the arrival has been picked 
 	npts = int(stavals[5])
+	delta = float(stavals[6])
+	dbpick = float(stavals[7])
+
 	x = np.linspace(0,ptime*2,npts)
 	p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
 	p1.plot([ptime,ptime],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,255,0))
-	inc += 1
+
+	text = pg.TextItem('%s %s %s' %(network,station,channel))
+	p1.addItem(text)
+	text.setPos(0, inc)
+
+	inc += 2
 
 
 

@@ -25,7 +25,7 @@ except:
 	print 'Cannot read metadata file %s' %metadata
 
 
-evID = dataarray.split('/')[0]
+evID = dataarray.split('/')[0].split('_')[0]
 
 quakedata = lines[2].split()
 evlon = quakedata[0]
@@ -50,6 +50,7 @@ p1 = win.addPlot(title='Event: LON %s LAT %s DEPTH %g MAG %s ID %s' %(evlon,evla
 #p2.plot(np.random.normal(size=110)+5, pen=(0,255,0), name="Blue curve")
 #p2.plot(np.random.normal(size=120)+10, pen=(0,0,255), name="Green curve")
 
+
 inc = 0
 for i in range(np.shape(seisarr)[1]-1):
 
@@ -62,11 +63,10 @@ for i in range(np.shape(seisarr)[1]-1):
 	delta = float(stavals[6])
 	dbpick = float(stavals[7])
 
-	print ptime,dbpick
+	#print ptime,dbpick
 	x = np.linspace(0,npts*delta,npts)
 
 	if dbpick < 0:
-		print dbpick
 		dbpick = 0
 
 	#p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
@@ -77,7 +77,11 @@ for i in range(np.shape(seisarr)[1]-1):
 
 	#plot the pick produced by bdshear, if it exists
 	p1.plot([dbpick,dbpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,0,255))
-	inc += 1
+
+	text = pg.TextItem('%s %s %s' %(network,station,channel))
+	p1.addItem(text)
+	text.setPos(0, inc)
+	inc += 2
 
 
 
