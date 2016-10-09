@@ -40,7 +40,7 @@ def userloop(path,ph,fulltrace=None):
 	SV.multiload()
 
 	#Don't necessarily need to use this option, but there for now
-	print fulltrace
+	#print fulltrace
 
 	if fulltrace:
 		SV.preservetraces()
@@ -140,6 +140,18 @@ def userloop(path,ph,fulltrace=None):
 
 			except:
 				print 'filter command %s not recognized' %usercommand
+
+
+		elif usercommand == 'map':
+
+			#Makes a station-event map for this configuration, with the distances 
+
+			print '---------------------------------'
+			print 'Making station-event map'
+			print '---------------------------------'
+
+
+			SV.map_event_stations()
 
 		else:
 

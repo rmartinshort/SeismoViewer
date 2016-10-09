@@ -62,6 +62,7 @@ for i in range(np.shape(seisarr)[1]-1):
 	npts = int(stavals[5])
 	delta = float(stavals[6])
 	dbpick = float(stavals[7])
+	distance = float(stavals[8])/1000.0
 
 	#print ptime,dbpick
 	x = np.linspace(0,npts*delta,npts)
@@ -78,9 +79,14 @@ for i in range(np.shape(seisarr)[1]-1):
 	#plot the pick produced by bdshear, if it exists
 	p1.plot([dbpick,dbpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,0,255))
 
-	text = pg.TextItem('%s %s %s' %(network,station,channel))
-	p1.addItem(text)
-	text.setPos(0, inc)
+	text1 = pg.TextItem('%s %s %s' %(network,station,channel))
+
+	#include the event-station distance
+	text2 = pg.TextItem('%s km' %distance)
+	p1.addItem(text1)
+	p1.addItem(text2)
+	text1.setPos(0, inc)
+	text2.setPos(200,inc)
 	inc += 2
 
 

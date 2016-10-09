@@ -22,6 +22,9 @@ from scipy.stats import mode
 #for timing various aspects of this code
 from time import time
 
+#for matplotlib maps
+import make_map as mapper
+
 
 class SeismoView:
 	def __init__(self,datadirectory,extension='BHZ',multiplot=True):
@@ -170,7 +173,8 @@ class SeismoView:
 					self.slicestream += slicetrace
 					lentraces.append(len(slicetrace.data))
 
-			self.slicestream.normalize()
+			for trace in self.slicestream:
+				trace.normalize()
 
 			#Having a detrend here increases run times dramatically 
 			#self.slicestream.detrend()
@@ -183,8 +187,6 @@ class SeismoView:
 
 
 
-
-
 	def filterslicestream(self,f1,f2):
 
 		'''bandpass slicestream according to user input'''
@@ -192,7 +194,39 @@ class SeismoView:
 
 		self.filterslicestreamdata = Tools.filterstream(self.slicestream.copy(),f1,f2)
 		self.filterslicestreamdata.detrend('simple')
-		self.filterslicestreamdata.normalize()
+
+		for trace in self.filterslicestreamdata:
+				trace.normalize()
+
+
+	def map_event_stations(self):
+
+		'''makes a map of stations corresponding to that event, with some distance information'''
+
+		stlons = []
+		stlats = []
+		stnames = [] 
+		stdistances = []
+
+		i = 0 
+
+		for trace in self.datastream:
+
+			if i == 0:
+				evlon = trace.stats.sac.evlo
+				evlat = trace.stats.sac.evla
+
+			stlons.append(trace.stats.sac.stlo)
+			stlats.append(trace.stats.sac.stla)
+			stnames.append(str(trace.stats.network+'_'+trace.stats.station))
+			stdistances.append(trace.stats.sac.dist/1000.0)
+
+			i += 1
+
+		mapper.StationEventsMap(stlats,stlons,evlat,evlon,stdistances,stnames)
+
+
+
 
 
 
@@ -252,6 +286,7 @@ class SeismoView:
 			station = trace.stats.station
 			channel = trace.stats.channel
 			delta = trace.stats.delta
+			stevdist = trace.stats.sac.dist
 
 			dbshearpick = trace.stats.sac.user4
 
@@ -268,7 +303,7 @@ class SeismoView:
 			samp = trace.stats.npts
 			halfwindow = trace.stats.sac.user3
 
-			outfile.write('%s %s %s %s %s %s %s %s\n' %(network,station,channel,phasetime,halfwindow,samp,delta,dbshearpick))
+			outfile.write('%s %s %s %s %s %s %s %s %s\n' %(network,station,channel,phasetime,halfwindow,samp,delta,dbshearpick,stevdist))
 
 		outfile.close()
 
@@ -286,9 +321,10 @@ if __name__ == '__main__':
 	test = SeismoView(testdir)
 	test.multiload()
 	test.slicetraces(phase='P')
-	test.filterslicestream(2,5)
+	test.map_event_stations()
+	#test.filterslicestream(2,5)
 	#test.filterwholestream(2,10)
-	test.arraytracesave('testdataset')
+	#test.arraytracesave('testdataset')
 
 
 
