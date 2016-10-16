@@ -119,7 +119,7 @@ class SeismoView:
 
 
 
-	def slicetraces(self,phase='P',halfwindow=20):
+	def slicetraces(self,phase='P',halfwindow=10):
 
 		'''Makes a new stream consisting of traces cut around predicted arrival given by phase, with a halfwindow
 		provided by the user'''
@@ -228,8 +228,6 @@ class SeismoView:
 
 
 
-
-
 	def arraytracesave(self,outfilebasename,phase='P'):
 
 		'''Saves the stream data in .npy format'''
@@ -246,6 +244,8 @@ class SeismoView:
 		#This requires all the traces to be of the same length. Since they've all been sliced, this should be the case
 
 		#Make a copy of the memory stream, to be written to an outfile, ready for plotting
+
+		t0 = time() 
 
 		if self.filterslicestreamdata:
 			outstream = self.filterslicestreamdata
@@ -264,12 +264,14 @@ class SeismoView:
 		#Get information about the event
 		quakelon = outstream[0].stats.sac.evlo
 		quakelat = outstream[0].stats.sac.evla
-		quakedeph = outstream[0].stats.sac.evdp
+		quakedepth = outstream[0].stats.sac.evdp
 		quakemag = outstream[0].stats.sac.mag
+
+		print quakedepth
 
 		outfile.write('---------------------------------\n')
 		outfile.write('Quake information below:\n')
-		outfile.write('%g %g %g %g\n' %(quakelon,quakelat,quakedeph,quakemag))
+		outfile.write('%g %g %g %g\n' %(quakelon,quakelat,quakedepth,quakemag))
 		outfile.write('---------------------------------\nTrace information below\n')
 		outfile.write('Network Station Channel\n')
 
@@ -303,11 +305,22 @@ class SeismoView:
 			samp = trace.stats.npts
 			halfwindow = trace.stats.sac.user3
 
+			if halfwindow < 0:
+				halfwindow = 0.0
+			if dbshearpick < 0:
+				dbshearpick = 0.0
+			if phasetime < 0:
+				phasetime = 0.0
+
 			outfile.write('%s %s %s %s %s %s %s %s %s\n' %(network,station,channel,phasetime,halfwindow,samp,delta,dbshearpick,stevdist))
 
 		outfile.close()
 
 		np.save(outfilebasename+'.npy',arr)
+
+		t1 = time()
+
+		print 'Time to gather and write: %g' %(t1-t0)
 
 
 

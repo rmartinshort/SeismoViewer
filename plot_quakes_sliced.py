@@ -6,6 +6,7 @@ from pyqtgraph.Qt import QtGui, QtCore
 import numpy as np
 import pyqtgraph as pg
 import sys
+from time import time
 
 dataarray = sys.argv[1]
 metadata = sys.argv[2]
@@ -50,8 +51,12 @@ p1 = win.addPlot(title='Event: LON %s LAT %s DEPTH %g MAG %s ID %s' %(evlon,evla
 #p2.plot(np.random.normal(size=110)+5, pen=(0,255,0), name="Blue curve")
 #p2.plot(np.random.normal(size=120)+10, pen=(0,0,255), name="Green curve")
 
+
+t0 = time()
+
 inc = 0
 for i in range(np.shape(seisarr)[1]-1):
+	print i
 
 	stavals = stationdata[i].split()
 	network = stavals[0]
@@ -62,22 +67,39 @@ for i in range(np.shape(seisarr)[1]-1):
 	npts = int(stavals[5])
 	delta = float(stavals[6])
 	dbpick = float(stavals[7])
+	distance = float(stavals[8])/1000.0
+
+	#only plot the events with picks(?)
+
+
+	if dbpick > 0:
+		res = float(stavals[3])-dbpick #raveltime residual between predicted and actual arrival
+		pick = ptime - res
+
+
 
 	x = np.linspace(0,ptime*2,npts)
 	p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
-	p1.plot([ptime,ptime],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,255,0))
+	#p1.plot([ptime,ptime],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,255,0))
+	p1.plot([pick,pick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,0,225))
 
-	text = pg.TextItem('%s %s %s' %(network,station,channel))
-	p1.addItem(text)
-	text.setPos(0, inc)
+	text1 = pg.TextItem('%s %s %s' %(network,station,channel))
+	#include the event-station distance
+	text2 = pg.TextItem('%s km' %distance)
+	p1.addItem(text1)
+	p1.addItem(text2)
+	text1.setPos(0, inc)
+	text2.setPos(ptime*1.5,inc)
 
-	inc += 2
+	inc += 1
 
+t1 = time()
 
 
 p1.setLabel('bottom', "Time", units='s')
 p1.showAxis('left', False)
 
+print 'Time to load plot: %g' %(t1-t0)
 
 
 

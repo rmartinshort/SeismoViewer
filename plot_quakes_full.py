@@ -6,6 +6,7 @@ from pyqtgraph.Qt import QtGui, QtCore
 import numpy as np
 import pyqtgraph as pg
 import sys
+from time import time 
 
 dataarray = sys.argv[1]
 metadata = sys.argv[2]
@@ -30,7 +31,7 @@ evID = dataarray.split('/')[0].split('_')[0]
 quakedata = lines[2].split()
 evlon = quakedata[0]
 evlat = quakedata[1]
-evdep = float(quakedata[2])/1000.0
+evdep = float(quakedata[2])
 evmag = quakedata[3]
 
 stationdata = lines[6:]
@@ -44,12 +45,20 @@ win.setWindowTitle('SeismoViewer')
 # Enable antialiasing for prettier plots
 pg.setConfigOptions(antialias=True)
 
-p1 = win.addPlot(title='Event: LON %s LAT %s DEPTH %g MAG %s ID %s' %(evlon,evlat,evdep,evmag,evID))
+p1 = win.addPlot(title='Event: LON %s LAT %s DEPTH %g km MAG %s ID %s' %(evlon,evlat,evdep,evmag,evID))
 #p1.addLegend()
 #p2.plot(np.random.normal(size=100), pen=(255,0,0), name="Red curve")
 #p2.plot(np.random.normal(size=110)+5, pen=(0,255,0), name="Blue curve")
 #p2.plot(np.random.normal(size=120)+10, pen=(0,0,255), name="Green curve")
 
+#Get basic information required to plot
+stvals = stationdata[0].split()
+npts = float(stvals[5])
+delta = float(stvals[6])
+#Make x axis array for the plotting 
+x = np.linspace(0,npts*delta,npts)
+
+t0 = time()
 
 inc = 0
 for i in range(np.shape(seisarr)[1]-1):
@@ -59,37 +68,35 @@ for i in range(np.shape(seisarr)[1]-1):
 	station = stavals[1]
 	channel = stavals[2]
 	ptime= float(stavals[3])
-	npts = int(stavals[5])
-	delta = float(stavals[6])
 	dbpick = float(stavals[7])
 	distance = float(stavals[8])/1000.0
 
-	#print ptime,dbpick
-	x = np.linspace(0,npts*delta,npts)
+	#only plot events that have picks, which saves time
 
-	if dbpick < 0:
-		dbpick = 0
+	if dbpick > 0:
 
-	#p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
-	p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
+		#p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
+		p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
 
-	#plot the P wave arrival times 
-	p1.plot([ptime,ptime],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,255,0))
+		#plot the P wave arrival times 
+		p1.plot([ptime,ptime],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,255,0))
 
-	#plot the pick produced by bdshear, if it exists
-	p1.plot([dbpick,dbpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,0,255))
+		#plot the pick produced by bdshear, if it exists
+		p1.plot([dbpick,dbpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,0,255))
 
-	text1 = pg.TextItem('%s %s %s' %(network,station,channel))
+		text1 = pg.TextItem('%s %s %s' %(network,station,channel))
 
-	#include the event-station distance
-	text2 = pg.TextItem('%s km' %distance)
-	p1.addItem(text1)
-	p1.addItem(text2)
-	text1.setPos(0, inc)
-	text2.setPos(200,inc)
-	inc += 2
+		#include the event-station distance
+		text2 = pg.TextItem('%s km' %distance)
+		p1.addItem(text1)
+		p1.addItem(text2)
+		text1.setPos(0, inc)
+		text2.setPos(200,inc)
+		inc += 2
 
+t1 = time()
 
+print 'Time to load plot: %g' %(t1-t0)
 
 p1.setLabel('bottom', "Time", units='s')
 p1.showAxis('left', False)

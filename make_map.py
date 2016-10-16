@@ -124,6 +124,6 @@ def Alaskamapfull(path):
 
 if __name__ == '__main__':
 
-	Alaskamapfull('/Users/rmartinshort/Documents/Berkeley/SeismoGramManip/test_data/autopicktest/2016-01-01_2016-01-25')
+	Alaskamapfull('/Users/rmartinshort/Documents/Berkeley/SeismoGramManip/test_data/autopicking_1/BOX/Merged/2015-10-01_2016-10-01')
 
 
