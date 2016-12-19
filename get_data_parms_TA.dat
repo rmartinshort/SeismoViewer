@@ -1,0 +1,40 @@
+######################################################
+#Parameter file for input into 'Get_Data_For_Tomo.py'
+######################################################
+#Input should be as follows:
+#[data directory name] - will be created
+#[minimum magnitude] - suggest 6.0 for land based tomography
+#[maximum magnitude] - suggest 8.0
+#[start date] - in format YYYY-MM-DD
+#[end date] - in format YYYY-MM-DD
+#[network code]
+#[station code] - enter * if you want all of them. Will also work with A* etc,to obtain all stations whose name starts with A 
+#[channel code]
+#[station bounding box] - in format minlon/maxlon/minlon/maxlon, leave blank [-] if none
+#[event bounding box] - in format minlon/maxlon/minlon/maxlon, leave blank [-] if none
+#[event circle] - in format lon/lat/rmin/rmax, where lon/lat is the circle center (choose in the middle of your array). Do not specify along with event_bounding
+#[instrument correction] - enter 'DIS', 'VEL' or 'ACC'. Suggest 'VEL'. Enter 'N' for no correction 
+#[tracelength] - enter value. Suggest 3600
+#_________________________________________________________________________________________________________
+#More parameters could be added in future to take full advantage of obspyDMC, but this is enough for now
+#_________________________________________________________________________________________________________
+############################################################################################################
+/Users/rmartinshort/Documents/Berkeley/SeismoGramManip/test_data/autopicktest
+4.0
+8.0
+2016-04-01
+2016-04-25
+TA
+*
+BH*
+-171/-123/52/73
+-
+-147/63/0/10
+NONE
+500
+IRIS
+#
+#
+#Add notes by putting a # infront of the line
+#30/110 for P
+#20/105 for S 

@@ -70,6 +70,13 @@ for i in range(np.shape(seisarr)[1]-1):
 	ptime= float(stavals[3])
 	dbpick = float(stavals[7])
 	distance = float(stavals[8])/1000.0
+	sacpick = float(stavals[9])
+	pythonpick = float(stavals[10])
+
+	if abs(sacpick-ptime) > 2:
+		sacpick = 0
+	if abs(pythonpick-ptime) > 2:
+		pyqtgraph = 0
 
 	#only plot events that have picks, which saves time
 
@@ -81,8 +88,14 @@ for i in range(np.shape(seisarr)[1]-1):
 		#plot the P wave arrival times 
 		p1.plot([ptime,ptime],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,255,0))
 
-		#plot the pick produced by bdshear, if it exists
+		#plot the pick produced by dbshear, if it exists
 		p1.plot([dbpick,dbpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,0,255))
+
+		#plot the pick produced by sac, if it exists
+		p1.plot([sacpick,sacpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(255,255,255))
+
+		#plot the pick produced by sac, if it exists
+		p1.plot([pythonpick,pythonpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(255,0,0))
 
 		text1 = pg.TextItem('%s %s %s' %(network,station,channel))
 
@@ -91,7 +104,7 @@ for i in range(np.shape(seisarr)[1]-1):
 		p1.addItem(text1)
 		p1.addItem(text2)
 		text1.setPos(0, inc)
-		text2.setPos(200,inc)
+		text2.setPos(100,inc)
 		inc += 2
 
 t1 = time()

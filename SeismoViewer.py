@@ -291,6 +291,8 @@ class SeismoView:
 			stevdist = trace.stats.sac.dist
 
 			dbshearpick = trace.stats.sac.user4
+			pythonpick = trace.stats.sac.user6
+			sacpick = trace.stats.sac.a
 
 			if phase == 'P':
 				phasetime = trace.stats.sac.user1
@@ -311,8 +313,12 @@ class SeismoView:
 				dbshearpick = 0.0
 			if phasetime < 0:
 				phasetime = 0.0
+			if sacpick < 0:
+				sacpick = 0
+			if pythonpick < 0:
+				pythonpick = 0
 
-			outfile.write('%s %s %s %s %s %s %s %s %s\n' %(network,station,channel,phasetime,halfwindow,samp,delta,dbshearpick,stevdist))
+			outfile.write('%s %s %s %s %s %s %s %s %s %s %s\n' %(network,station,channel,phasetime,halfwindow,samp,delta,dbshearpick,stevdist,sacpick,pythonpick))
 
 		outfile.close()
 
