@@ -85,16 +85,16 @@ for i in range(np.shape(seisarr)[1]-1):
 		#p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
 		p1.plot(x,seisarr[:len(x),i]+inc, pen=(255,0,0))
 
-		#plot the P wave arrival times 
+		#plot the P wave arrival times - GREEN
 		p1.plot([ptime,ptime],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,255,0))
 
-		#plot the pick produced by dbshear, if it exists
+		#plot the pick produced by dbshear, if it exists -BLUE
 		p1.plot([dbpick,dbpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(0,0,255))
 
-		#plot the pick produced by sac, if it exists
+		#plot the pick produced by sac, if it exists - WHITE 
 		p1.plot([sacpick,sacpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(255,255,255))
 
-		#plot the pick produced by sac, if it exists
+		#plot the pick produced by python, if it exists - RED
 		p1.plot([pythonpick,pythonpick],[min(seisarr[:,i])+inc,max(seisarr[:,i])+inc],pen=(255,0,0))
 
 		text1 = pg.TextItem('%s %s %s' %(network,station,channel))
